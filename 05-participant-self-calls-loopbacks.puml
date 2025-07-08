@@ -1,0 +1,11 @@
+@startuml
+participant Eduardo
+
+Eduardo -> Eduardo : Validate data
+activate Eduardo
+deactivate Eduardo
+
+Eduardo -> Eduardo : Save to local cache
+activate Eduardo
+deactivate Eduardo
+@enduml

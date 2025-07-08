@@ -1,0 +1,20 @@
+@startuml
+/'
+Optional condition (like a simple if statement) can be represented using the "opt" keyword.
+This is useful for scenarios where an action may or may not occur based on a condition.
+
+NOTES:
+opt is like a solo if statement but doesn't support else.
+If I want to handle else then need to use alt.
+I can use the else part but it is not recommended as part of best practices in UML.
+
+'/
+participant Eduardo
+participant System
+
+Eduardo -> System: View dasboard
+opt User is logged in
+  System --> Eduardo: Show dashboard
+end opt
+
+@enduml

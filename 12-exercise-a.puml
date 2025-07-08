@@ -1,0 +1,59 @@
+@startuml
+
+/'
+🧪 Warm-Up Exercise: “Eduardo Asks for Status”
+
+Scenario:
+	1.	Eduardo sends a message to Axel: “How’s the deploy?”
+	2.	Axel replies: “Still running…”
+	3.	Eduardo sends another message: “Okay, I’ll check later.”
+	4.	Add a note saying: “Eduardo is waiting for deployment to finish” next to Eduardo.
+	5.	Use a dotted arrow for the reply.
+
+⸻
+
+🔧 Requirements:
+	•	2 participants: Eduardo, Axel
+	•	Solid arrows for messages
+	•	Dotted arrow for reply
+	•	One note left of Eduardo
+
+'/
+
+/'
+Lessons learned from this exercise:
+- I have to use actor instead of participant for Eduardo 
+as that is a User in the system.
+
+other notes for best practices:
+
+✅ Best Practice:
+
+Use actor for:
+	•	Users
+	•	Admins
+	•	Customers
+	•	Developers
+
+Use participant for:
+	•	APIs
+	•	Databases
+	•	Backend services
+	•	UI components
+	•	External systems
+
+
+'/ 
+
+
+actor Eduardo
+actor Axel
+
+Eduardo -> Axel: How's the deploy?
+Axel --> Eduardo: Still running...
+Eduardo -> Axel: Okay, I'll check later.
+note over Eduardo: Eduardo is waiting for deployment to finish
+
+@enduml
+
+

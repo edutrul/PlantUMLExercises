@@ -1,0 +1,26 @@
+@startuml
+
+/' 
+We can use notes to add more information
+to the participants in the diagram.
+Notes can be positioned to the left or right of a participant.
+Also over a message.
+like this one: 
+note over Eduardo : This is a note over Eduardo
+note over Eduardo, Axel: This is a note over Eduardo and Axel
+'/
+
+' Define participants
+participant Eduardo
+participant Axel
+
+Eduardo -> Axel: Hey bro did you deploy?
+' Note to Axel positioned to the right
+note right of Axel: Thinking about the deployment
+
+Axel --> Eduardo: Yes, just did it
+note left of Eduardo: QA can be done now
+'note over Eduardo : This is a note over Eduardo'
+'note over Eduardo, Axel: This is a note over Eduardo and Axel
+
+@enduml

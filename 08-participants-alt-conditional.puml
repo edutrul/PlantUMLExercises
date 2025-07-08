@@ -1,0 +1,25 @@
+@startuml
+
+/'
+Alternative condition (like a simple if-else statement) can be represented using the "alt"
+// keyword. This is useful for scenarios where there are multiple possible outcomes based on a condition.
+
+
+NOTES:
+alt is like if statement with else.
+If I want to handle a single condition then need to use opt.
+I can for use use without else but it is not recommended as part of best practices in UML.
+'/
+
+participant Eduardo
+participant System
+
+Eduardo -> System : Login
+' alt (alternative) means conditional block starts
+alt Valid credentials?
+  System -> Eduardo: Access granted
+else 
+  System -> Eduardo: Access denied
+end
+
+@enduml

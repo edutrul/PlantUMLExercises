@@ -1,0 +1,49 @@
+@startuml
+
+/'
+
+🧠 Exercise: User Logs Into System
+
+Scenario:
+	1.	User (Eduardo) enters email and password.
+	2.	The frontend sends the credentials to the Auth Service.
+	3.	Auth Service verifies credentials with the Database.
+	4.	Database returns user record.
+	5.	Auth Service responds with a success message.
+	6.	Frontend shows a welcome message.
+
+Requirements:
+	•	Use actor for Eduardo.
+	•	Use participant for Frontend, AuthService, and Database.
+	•	Use solid arrows for calls.
+	•	Use a dotted arrow for response from the Database to AuthService.
+	•	Add a note over AuthService: “Handles authentication logic
+'/
+
+/'
+
+Lessons learned:
+    •	Use always imperative verbs for actions "Enter, send Show, Return, Verify".
+    •	Use solid arrows for calls and dotted arrows for responses. (not mandatory but helps clarity).
+    •	Use timeline activate/deactive to show when a service is processing.
+
+'/
+
+actor Eduardo
+participant Frontend
+participant AuthService
+participant Database
+
+Eduardo -> Frontend: Enter email and password
+Frontend -> AuthService: Send credentials
+activate AuthService
+AuthService -> Database: Verify credentials
+note over Database: Query user record
+Database --> AuthService: Return user record
+deactivate AuthService
+
+AuthService --> Frontend: Show sucess message
+Frontend --> Eduardo: Show welcome message
+
+
+@enduml

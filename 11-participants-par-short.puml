@@ -1,0 +1,19 @@
+@startuml
+
+/'
+Par -- Parallel Actions short version
+This is used to represent actions that can occur simultaneously.
+
+use short version for simpler scenarios for quick sketching.
+But for professional scenarios use the full version with clear labels.
+'/
+
+participant Eduardo
+participant BackupSystem
+participant EmailSystem
+
+par
+  Eduardo -> BackupSystem : Backup
+end par
+
+@enduml

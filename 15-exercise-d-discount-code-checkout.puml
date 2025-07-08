@@ -1,0 +1,16 @@
+@startuml
+
+actor Customer
+participant CheckoutPage
+participant DiscountService
+
+Customer -> CheckoutPage: Start checkout
+
+opt Customer entered discount code
+    CheckoutPage -> DiscountService: Validate code
+    DiscountService --> CheckoutPage: Return discount
+end opt
+
+CheckoutPage -> Customer: Show final price
+
+@enduml

@@ -1,0 +1,53 @@
+@startuml
+
+/'
+
+🔁 Exercise: Search Flow (User Query)
+
+Scenario:
+    1. User enters a search term in the Drupal frontend.
+    2. The frontend sends the query to the Fusion Query Pipeline.
+    4. The Pipeline fetches results from the Fusion Collection.
+    5. Results are passed back through the Fusion Query Pipeline.
+    6. The Fusion API returns search results to the Drupal frontend.
+    7. The frontend displays results to the User.
+
+Requirements:
+    • Use actor for User.
+    • Use participant for Drupal Frontend, Fusion Query Pipeline, and Fusion Collection.
+    • Use `as` alias names for cleaner syntax (e.g., DF for Drupal Frontend).
+    • Use solid arrows for requests and dotted arrows for responses.
+    • Optionally, use activation/deactivation to show processing time.
+    • Add notes for clarity (e.g., faceting, filtering logic).
+
+'/
+
+actor User
+participant "Drupal Frontend" as DrupalFrontend
+
+box "Fusion Platform"#E0F7F7
+  participant "Fusion Query Pipeline" as FusionQueryPipeline
+  database "Fusion Collection" as FusionCollection
+end box
+
+User -> DrupalFrontend: Enter search term
+note over DrupalFrontend: Search term entered\n (e.g., “Hospital”)
+activate DrupalFrontend
+DrupalFrontend -> FusionQueryPipeline: Send query
+note over FusionQueryPipeline
+  Applies search logic:
+  • Filters irrelevant results
+  • Ranks by relevance
+  • Boosts based on business rules
+  • Handles other search optimizations
+end note
+activate FusionQueryPipeline
+FusionQueryPipeline -> FusionCollection: Fetch results
+FusionCollection --> FusionQueryPipeline: Return matching results
+deactivate FusionQueryPipeline
+FusionQueryPipeline --> DrupalFrontend: Return matching results
+deactivate DrupalFrontend
+DrupalFrontend --> User: Display matching results
+
+
+@enduml

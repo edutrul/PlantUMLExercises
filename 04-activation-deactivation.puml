@@ -1,0 +1,26 @@
+@startuml
+
+/'
+
+The activate and deactivate keywords are used to show when a participant 
+is active or inactive in the sequence diagram.
+
+When a participant is activated, a thin vertical rectangle appears on their lifeline, indicating they are "processing" something.
+
+When the participant is deactivated, the rectangle disappears, showing they are no longer active.
+
+In practice useful when a function call, API request, or task is being processed by a participant.
+
+'/
+
+participant Eduardo
+participant Axel
+
+Eduardo -> Axel: Start deployment
+activate Axel
+
+Axel -> Eduardo: Deployment in progress
+Eduardo --> Axel: Got it, thanks!
+deactivate Axel
+
+@enduml

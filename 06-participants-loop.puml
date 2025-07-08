@@ -1,0 +1,12 @@
+@startuml
+
+participant Eduardo
+participant Axel
+
+loop for each file
+  Eduardo -> Axel: Upload file
+  Axel --> Eduardo: Confirm
+end loop
+
+
+@enduml

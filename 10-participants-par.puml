@@ -1,0 +1,20 @@
+@startuml
+
+/'
+par -- Parallel Actions
+This is used to represent actions that can occur simultaneously.
+It is useful for scenarios where multiple processes or actions can happen at the same time.
+'/
+participant Eduardo
+participant BackupSystem
+participant EmailSystem
+
+par Start backup
+  Eduardo -> BackupSystem: Trigger DB backup
+end par
+
+par Send notification
+  Eduardo -> EmailSystem: Notify users about backup
+end par
+
+@enduml

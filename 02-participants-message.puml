@@ -1,0 +1,12 @@
+@startuml
+
+' Define participants
+participant Eduardo
+participant Axel
+
+' sends a message from Eduardo to Axel
+Eduardo -> Axel: Hey bro what's up?
+' If Axel responds, then we need dotted arrow --> always
+Axel --> Eduardo: Doing great, thanks! you?
+Eduardo -> Axel: As always amazing yay
+@enduml

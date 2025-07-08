@@ -1,0 +1,13 @@
+@startuml
+
+participant Eduardo
+
+loop Retry 3 times
+  Eduardo -> Eduardo: Try to reconnect
+  loop While not connected
+    Eduardo -> Eduardo: Wait 5 seconds
+   end loop
+   deactivate Eduardo
+end loop 
+
+@enduml

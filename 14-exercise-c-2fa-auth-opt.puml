@@ -1,0 +1,22 @@
+@startuml
+
+actor User
+participant Frontend
+participant AuthService
+participant SMSService
+
+User -> Frontend: Enter credentials
+Frontend -> AuthService: Send credentials
+AuthService -> AuthService: Validate credentials
+
+opt 2FA is enabled
+    AuthService -> SMSService: Send verification code
+    SMSService --> User: Deliver verification code
+    User -> AuthService: Enter verification code
+    AuthService -> AuthService: Verify code
+end opt
+
+AuthService --> Frontend: Success
+Frontend --> User: Show dashboard
+
+@endum
