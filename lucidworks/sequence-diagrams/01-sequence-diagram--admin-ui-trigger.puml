@@ -1,0 +1,50 @@
+@startuml
+title Admin Manual Trigger via Drupal UI
+
+/'
+🛠 Index Trigger Flow (UI Button)
+
+Scenario:
+1. Admin clicks a “Sync Now” button in Drupal UI.
+2. Drupal sends an export request to the Fusion REST V2 connector or the Custom Lucidworks connector.
+3. Fusion initiates indexing process and crawls data from Drupal's JSON endpoint.
+4. Data flows through the indexing pipeline into the Fusion Collection.
+
+Requirements:
+• Use actor for Admin.
+• Use participant for Drupal, Fusion Connector, Indexing Pipeline, and Fusion Collection.
+• Use `as` aliases for clarity.
+• Use activation blocks to show processing time.
+• Use notes to explain optional logic like partial/full reindexing.
+'/
+
+actor Admin
+participant "Drupal UI" as DrupalUIButton
+
+box "Fusion Platform"#E0F7F7
+  participant "Fusion Connector\n(REST V2 or Custom)" as FusionConnector
+  participant "Fusion Indexing Pipeline" as FusionIndexingPipeline
+  database "Fusion Collection" as FusionCollection
+end box
+
+
+Admin -> DrupalUIButton: Click "Sync Now"
+note left of DrupalUIButton
+  Custom admin button
+  triggers sync
+end note
+activate DrupalUIButton
+DrupalUIButton -> FusionConnector: Send export trigger
+activate FusionConnector
+note over FusionConnector
+Triggers crawl from JSON endpoint:
+• Full (REST V2)
+• Partial (Custom Connector)
+end note
+FusionConnector -> FusionIndexingPipeline: Start indexing job
+activate FusionIndexingPipeline
+FusionIndexingPipeline -> FusionCollection: Ingest into \nFusion Collection
+deactivate FusionIndexingPipeline
+deactivate FusionConnector
+deactivate DrupalUIButton
+@enduml
