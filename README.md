@@ -62,9 +62,8 @@ To export:
 - Graphviz Docs
 - PlantUML Extension (VSCode)
 
-⸻
 
-📂 File Structure
+## 📂 File Structure
 
 ```
 .
