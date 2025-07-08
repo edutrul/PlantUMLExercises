@@ -1,4 +1,5 @@
 @startuml
+title User Search Flow – Lucidworks + Drupal Integration
 
 /'
 
@@ -21,7 +22,6 @@ Requirements:
     • Add notes for clarity (e.g., faceting, filtering logic).
 
 '/
-
 actor User
 participant "Drupal Frontend" as DrupalFrontend
 
