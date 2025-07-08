@@ -83,4 +83,5 @@ Feel free to open issues or pull requests to suggest improvements or new diagram
 ## 🧠 Tips
 
 - You can use @startuml and @enduml inside Markdown files and preview them directly in VS Code using the PlantUML extension.
-- You can edit UML without forking/cloning just go to https://editor.plantuml.com/uml/JP4v3iCW44NxEGKNI16lKeh8MUj4oWKmfa1om86XyEs36JiP2dZwJupueWieFSRt25CwZJAJj2WUZ6KGT-T0AdHUq3en9hs7taKxI3ylsPan-GAKi-ZTcEzS69ClGLiqEDFC6sFo5GmIPI-3Nh8hO_9rcZ-EMg5nDgJvVoRVm2VggDStFncJRo5jOdVCNSH1l9oWmYmlAD-ACbEIMIioKP6WRYolATywCTDietuDc6opoqsWqtPOlkqB and do your changes on live.
+- You can edit UML without forking/cloning just go to https://editor.plantuml.com/uml/JP4v3iCW44NxEGKNI16lKeh8MUj4oWKmfa1om86XyEs36JiP2dZwJupueWieFSRt25CwZJAJj2WUZ6KGT-T0AdHUq3en9hs7taKxI3ylsPan-GAKi-ZTcEzS69ClGLiqEDFC6sFo5GmIPI-3Nh8hO_9rcZ-EMg5nDgJvVoRVm2VggDStFncJRo5jOdVCNSH1l9oWmYmlAD-ACbEIMIioKP6WRYolATywCTDietuDc6opoqsWqtPOlkqB and do your changes on live. 
+- Another reference to use on live https://www.plantuml.com/plantuml/uml/SyfFKj2rKt3CoKnELR1Io4ZDoSa70000 which you can share your sequence diagram online.
