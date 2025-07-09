@@ -1,0 +1,102 @@
+@startuml
+/' 
+@id: ING-004
+@file: ING-004--restv2-fetch-now.puml
+@title: Manual Sync via Fusion UI
+@type: sequence
+@description: A Fusion Admin manually triggers a data sync from Drupal by clicking “Fetch Now” in Fusion UI.
+@related: ING-001, ING-002, ING-003, ING-005
+'/
+
+/'
+🛠 Manual Sync Flow (Fusion UI)
+
+Scenario:
+1. Fusion Admin clicks “Fetch Now” inside the Fusion connector interface.
+2. Fusion connector pulls data from Drupal’s JSON Export endpoint.
+3. The indexing job processes the data and stores it into the Fusion Collection.
+
+Requirements:
+• Use actor for Fusion Admin.
+• Use participants for Fusion Connector, Indexing Pipeline, Fusion Collection, and Drupal JSON Export.
+• Use `as` aliases for clarity.
+• Use activation blocks to represent processing.
+• Use notes to indicate where the job was triggered manually.
+• Style using `<style>` block for consistent visual theme.
+'/
+
+<style>
+  title {
+    FontSize 30
+  }
+  box {
+    FontSize 25
+    .drupalPlatform {
+      BackgroundColor #F0F0F0
+    }
+    .fusionPlatform {
+      BackgroundColor #E0F7F7
+    }
+  }
+</style>
+
+title Manual Sync via Fusion UI – Lucidworks + Drupal Integration
+
+autonumber
+
+actor "Fusion Admin" as FusionAdmin
+
+box "Fusion Platform" <<fusionPlatform>>
+  participant FusionConnector [
+    =🔧 Fusion Connector
+    ----
+    ""REST V2 Connector""
+  ]
+  participant IndexingPipeline [
+    =📊 Fusion Indexing
+    ----
+    ""Pipeline""
+  ]
+  database "🗃️ Fusion Collection" as FusionCollection
+end box
+
+box "Drupal Platform" <<drupalPlatform>>
+  participant DrupalExport [
+    =🔄 Drupal JSON Export
+    ----
+    ""/fusion-export/{$server}/{$index}""
+  ]
+end box
+
+FusionAdmin -> FusionConnector: Click “Fetch Now”
+note right of FusionConnector: Manual trigger from Fusion UI
+activate FusionConnector
+FusionConnector -> DrupalExport: Fetch JSON export
+activate DrupalExport
+DrupalExport --> FusionConnector: Return content data
+deactivate DrupalExport
+
+FusionConnector -> IndexingPipeline: Start indexing job
+deactivate FusionConnector
+
+activate IndexingPipeline
+IndexingPipeline -> FusionCollection: Ingest into Fusion Collection
+deactivate IndexingPipeline
+
+note bottom
+  ⚠️ The “Fetch Now” button in Fusion triggers 
+  a one-time pull from Drupal. For large datasets 
+  or frequent updates, scheduled jobs are preferred.
+end note
+
+legend bottom
+|= Component             |= Meaning |
+| **Fusion Platform**    ||
+| 🔧 Fusion Connector     | REST V2 connector that pulls data from Drupal |
+| 📊 Fusion Indexing      | Lucidworks pipeline to transform & ingest |
+| 🗃️ Fusion Collection    | Final Lucidworks index target |
+| **Drupal Platform**    ||
+| 🔄 Drupal JSON Export   | JSON endpoint exposed by Drupal for Fusion to crawl |
+endlegend
+
+@endumlß
