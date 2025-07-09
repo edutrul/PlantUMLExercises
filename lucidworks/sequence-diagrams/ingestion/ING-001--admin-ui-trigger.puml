@@ -1,7 +1,16 @@
 @startuml
 
 /' 
-🛠 Index Trigger Flow (UI Button)
+@id: ING-001
+@file: ING-001--admin-ui-trigger.puml
+@title: Admin Manual Trigger via Drupal UI
+@type: sequence
+@description: Shows how a Drupal admin triggers a Fusion indexing job via a UI button.
+@related: ING-002, ING-003, ING-004, ING-005
+'/
+
+/'
+🖱️ Index Trigger Flow – Drupal UI
 
 Scenario:
 1. Admin clicks a “Sync Now” button in Drupal UI.
@@ -15,10 +24,6 @@ Requirements:
 • Use `as` aliases and `<style>` block for consistent formatting.
 • Use activation blocks to show processing time.
 • Use notes to explain logic or highlight custom modules.
-
-Related diagrams:
- - ING-002 | SEQ-003 | Admin Manual Trigger via Drush (02-sequence-diagram--drush-trigger.puml)
- - ING-004 | SEQ-005 | Fusion UI “Fetch Now” Trigger (04-sequence-diagram--restv2-fetch-now.puml)
 '/
 
 <style>
@@ -36,7 +41,7 @@ Related diagrams:
   }
 </style>
 
-title 01 – Admin Manual Trigger via Drupal UI – Lucidworks + Drupal Integration
+title Admin Manual Trigger via Drupal UI – Lucidworks + Drupal Integration
 
 autonumber
 
@@ -44,7 +49,7 @@ actor "Admin" as Admin
 
 box "Drupal Platform" <<drupalPlatform>>
   participant DrupalUI [
-    =🖱️ Drupal UI
+    =🖱️ Drupal UIß
     ----
     ""Sync Now Button (Custom)""
   ]

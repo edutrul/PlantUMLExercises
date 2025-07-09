@@ -1,0 +1,87 @@
+/' 
+@id: ING-003
+@file: ING-003--restv2-scheduled.puml
+@title: Scheduled Sync via Fusion REST V2
+@type: sequence
+@description: Fusion triggers a scheduled crawl from the Drupal JSON Export endpoint using the REST V2 connector.
+@related: ING-001, ING-002, ING-004
+'/
+
+<style>
+  title {
+    FontSize 30
+  }
+  box {
+    FontSize 25
+    .drupalPlatform {
+      BackgroundColor #F0F0F0
+    }
+    .fusionPlatform {
+      BackgroundColor #E0F7F7
+    }
+  }
+</style>
+
+title Scheduled Sync via Fusion REST V2 – Lucidworks + Drupal Integration
+
+autonumber
+
+participant Scheduler [
+  =⏱️ Fusion Scheduler
+  ----
+  ""Automated Job (every 5 min)""
+]
+
+box "Fusion Platform" <<fusionPlatform>>
+  participant FusionConnector [
+    =🔧 Fusion Connector
+    ----
+    ""REST V2 Connector""
+  ]
+  participant IndexingPipeline [
+    =📊 Fusion Indexing
+    ----
+    ""Pipeline""
+  ]
+  database "🗃️ Fusion Collection" as FusionCollection
+end box
+
+box "Drupal Platform" <<drupalPlatform>>
+  participant DrupalExport [
+    =🔄 Drupal JSON Export
+    ----
+    ""/fusion-export/{$server}/{$index}""
+  ]
+end box
+
+Scheduler -> FusionConnector: Trigger crawl (every 5 min)
+note right of FusionConnector: Job scheduled via Fusion UI or cron config
+activate FusionConnector
+
+FusionConnector -> DrupalExport: Fetch JSON export
+activate DrupalExport
+DrupalExport --> FusionConnector: Return content data
+deactivate DrupalExport
+
+FusionConnector -> IndexingPipeline: Start indexing job
+deactivate FusionConnector
+
+activate IndexingPipeline
+IndexingPipeline -> FusionCollection: Ingest into Fusion Collection
+deactivate IndexingPipeline
+
+note bottom
+  🔁 Fusion pulls content from Drupal automatically at regular intervals
+  (e.g., every 5 minutes). Partial update filters like **?since=timestamp**
+  may be supported if a custom connector is used.
+end note
+
+legend bottom
+|= Component              |= Meaning |
+| **Fusion Platform**     ||
+| 🔧 Fusion Connector     | REST V2 connector that pulls data from Drupal |
+| 📊 Fusion Indexing      | Lucidworks pipeline to transform & ingest |
+| 🗃️ Fusion Collection    | Final Lucidworks index target |
+| **Drupal Platform**     ||
+| 🔄 Drupal JSON Export   | JSON endpoint exposed by Drupal for Fusion to crawl |
+endlegend

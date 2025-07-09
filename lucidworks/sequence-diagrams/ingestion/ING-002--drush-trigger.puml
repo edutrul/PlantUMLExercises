@@ -1,12 +1,21 @@
 @startuml
 
+/' 
+@id: ING-002
+@file: ING-002--admin-cli-drush-trigger.puml
+@title: Admin Manual Trigger via Drush
+@type: sequence
+@description: Shows how a Drupal admin triggers a Fusion indexing job via CLI using a custom Drush command.
+@related: ING-001, ING-003, ING-004, ING-005
+'/
+
 /'
 🛠 Index Trigger Flow (CLI via Drush)
 
 Scenario:
 1. Admin runs the `$ drush fusion:export` command from the terminal.
 2. Drupal re-indexes content using the Search API and builds the exportable data.
-3. Drupal triggers a Fusion connector to ingest the content from the JSON endpoint.
+3. Drupal triggers a Fusion connector to ingest tßhe content from the JSON endpoint.
 4. Fusion fetches the data, starts the indexing job, and populates the Fusion Collection.
 
 Requirements:
@@ -16,10 +25,6 @@ Requirements:
 • Use activation blocks to show processing time.
 • Use notes to explain internal logic or optional conditions like partial updates.
 • Style via `<style>` block (avoid deprecated `skinparam`).
-
-Related diagrams:
- - ING-002 | SEQ-003 | Admin Manual Trigger via Drush (02-sequence-diagram--drush-trigger.puml)
- - ING-004 | SEQ-005 | Fusion UI “Fetch Now” Trigger (04-sequence-diagram--restv2-fetch-now.puml)
 '/
 
 <style>
@@ -29,19 +34,19 @@ Related diagrams:
   box {
     FontSize 25
     .drupalPlatform {
-      BackgroundColor #F0F0F0ß
+      BackgroundColor #F0F0F0
     }
     .fusionPlatform {
       BackgroundColor #E0F7F7
     }
-    
   }
 </style>
 
-title 02 – Admin Manual Trigger via Drush – Lucidworks + Drupal Integration
+title Admin Manual Trigger via Drush
 
 autonumber
 actor "Admin\n(with CLI access)" as AdminCLI
+
 box "Drupal Platform" <<drupalPlatform>>
   participant DrushCLI [
     =💻 Drush CLI
@@ -82,8 +87,8 @@ deactivate DrushCLI
 
 activate SearchAPI
 note right of SearchAPI: Uses Drupal Search API\nframework to build data export
-SearchAPI -> DrupalExport: Generate latest exportable dataß
-note over of DrupalExport
+SearchAPI -> DrupalExport: Generate latest exportable data
+note over DrupalExport
   Acts as middleware between
   Drupal and Fusion Connector.
   Can be contributed or custom-built.
@@ -125,7 +130,7 @@ legend bottom
 | 🔄 Drupal JSON Export  | Acts as middleware endpoint |
 | **Fusion Platform**    ||
 | 🔧 Fusion Connector    | REST V2 or Custom connector to pull data |
-| 🧩 Fusion Indexing     | Lucidworks pipeline to transform & ingest |
+| 📊 Fusion Indexing     | Lucidworks pipeline to transform & ingest |
 | 🗃️ Fusion Collection   | Final Lucidworks index target |
 endlegend
 
