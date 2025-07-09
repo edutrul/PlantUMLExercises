@@ -7,6 +7,23 @@
 @related: ING-001, ING-002, ING-004
 '/
 
+/'
+🛠 Scheduled Sync Flow (REST V2)
+
+Scenario:
+1. A scheduled job (e.g., every 5 min) triggers a Fusion crawl via REST V2 connector.
+2. Fusion connector fetches the JSON export from Drupal.
+3. Fusion starts the indexing pipeline and pushes data to the Fusion Collection.
+
+Requirements:
+• Use participant for Fusion Scheduler to represent automation trigger.
+• Use participants for Fusion Connector, Indexing Pipeline, Fusion Collection, and Drupal JSON Export.
+• Use `as` aliases for clarity.
+• Use activation blocks for clarity.
+• Use notes for config hints and partial update filtering.
+• Use `<style>` block for consistent formatting.
+'/
+
 <style>
   title {
     FontSize 30
