@@ -1,0 +1,133 @@
+@startuml
+
+/'
+🛠 Index Trigger Flow (CLI via Drush)
+
+Scenario:
+1. Admin runs the `$ drush fusion:export` command from the terminal.
+2. Drupal re-indexes content using the Search API and builds the exportable data.
+3. Drupal triggers a Fusion connector to ingest the content from the JSON endpoint.
+4. Fusion fetches the data, starts the indexing job, and populates the Fusion Collection.
+
+Requirements:
+• Use actor for Admin.
+• Use participants for Drush CLI, Drupal Search API, Drupal JSON Export, Fusion Connector, Indexing Pipeline, and Fusion Collection.
+• Use `as` aliases for clarity.
+• Use activation blocks to show processing time.
+• Use notes to explain internal logic or optional conditions like partial updates.
+• Style via `<style>` block (avoid deprecated `skinparam`).
+'/
+
+/' Related diagrams:
+ - ING-001 | SEQ-002 | Admin UI Trigger via Button (01-sequence-diagram--admin-ui-trigger.puml)
+ - ING-004 | SEQ-005 | Fusion UI “Fetch Now” Trigger (04-sequence-diagram--restv2-fetch-now.puml)
+'/
+
+<style>
+  title {
+    FontSize 30
+  }
+  box {
+    FontSize 25
+    .drupalPlatform {
+      BackgroundColor #F0F0F0ß
+    }
+    .fusionPlatform {
+      BackgroundColor #E0F7F7
+    }
+    
+  }
+</style>
+
+title 02 – Admin Manual Trigger via Drush – Lucidworks + Drupal Integration
+
+autonumber
+actor "Admin\n(with CLI access)" as AdminCLI
+box "Drupal Platform" <<drupalPlatform>>
+  participant DrushCLI [
+    =💻 Drush CLI
+    ----
+    ""Custom Command""
+  ]
+  participant SearchAPI [
+    =📦 Drupal Search API
+    ----
+    ""Indexer (Custom Module)""
+  ]
+  participant DrupalExport [
+    =🔄 Drupal JSON Export
+    ----
+    ""/fusion-export/{$server}/{$index}""
+  ]
+end box
+
+box "Fusion Platform" <<fusionPlatform>>
+  participant FusionConnector [
+    =🔧 Fusion Connector
+    ----
+    ""REST V2 or Custom""
+  ]
+  participant IndexingPipeline [
+    =📊 Fusion Indexing
+    ----
+    ""Pipeline""
+  ]
+  database "🗃️ Fusion Collection" as FusionCollection
+end box
+
+AdminCLI -> DrushCLI: Run **$ drush fusion:export**
+note right of DrushCLI: Drush command triggers export\nlogic via Fusion Connector
+activate DrushCLI
+DrushCLI -> SearchAPI: Trigger internal Drupal re-index
+deactivate DrushCLI
+
+activate SearchAPI
+note right of SearchAPI: Uses Drupal Search API\nframework to build data export
+SearchAPI -> DrupalExport: Generate latest exportable dataß
+note over of DrupalExport
+  Acts as middleware between
+  Drupal and Fusion Connector.
+  Can be contributed or custom-built.
+end note
+deactivate SearchAPI
+
+' ✅ Trigger Fusion *after* export is ready
+DrushCLI -> FusionConnector: HTTP request to trigger external ingestion
+
+activate FusionConnector
+note right of FusionConnector
+  Triggers crawl from JSON endpoint:
+  • Full (REST V2)
+  • *Partial (Custom Connector)
+end note
+FusionConnector -> DrupalExport: Fetch JSON export
+activate DrupalExport
+DrupalExport --> FusionConnector: Return content data
+deactivate DrupalExport
+
+FusionConnector -> IndexingPipeline: Start indexing job
+deactivate FusionConnector
+
+activate IndexingPipeline
+IndexingPipeline -> FusionCollection: Ingest into Fusion Collection
+deactivate IndexingPipeline
+
+note bottom
+  ⚠️ For partial updates, Lucidworks will call the JSON Export endpoint
+  with a query parameter like **?since=timestamp**
+  to limit the crawl to recently updated items.
+end note
+
+legend bottom
+|= Component             |= Meaning |
+| **Drupal Platform**    ||
+| 🖥️ Drush CLI           | Drupal CLI tool using custom Drush command |
+| 📦 Drupal Search API   | Custom indexing module |
+| 🔄 Drupal JSON Export  | Acts as middleware endpoint |
+| **Fusion Platform**    ||
+| 🔧 Fusion Connector    | REST V2 or Custom connector to pull data |
+| 🧩 Fusion Indexing     | Lucidworks pipeline to transform & ingest |
+| 🗃️ Fusion Collection   | Final Lucidworks index target |
+endlegend
+
+@enduml
