@@ -16,10 +16,9 @@ Requirements:
 • Use activation blocks to show processing time.
 • Use notes to explain internal logic or optional conditions like partial updates.
 • Style via `<style>` block (avoid deprecated `skinparam`).
-'/
 
-/' Related diagrams:
- - ING-001 | SEQ-002 | Admin UI Trigger via Button (01-sequence-diagram--admin-ui-trigger.puml)
+Related diagrams:
+ - ING-002 | SEQ-003 | Admin Manual Trigger via Drush (02-sequence-diagram--drush-trigger.puml)
  - ING-004 | SEQ-005 | Fusion UI “Fetch Now” Trigger (04-sequence-diagram--restv2-fetch-now.puml)
 '/
 
@@ -113,7 +112,7 @@ IndexingPipeline -> FusionCollection: Ingest into Fusion Collection
 deactivate IndexingPipeline
 
 note bottom
-  ⚠️ For partial updates, Lucidworks will call the JSON Export endpoint
+  ⚠️ *For partial updates, Lucidworks will call the JSON Export endpoint
   with a query parameter like **?since=timestamp**
   to limit the crawl to recently updated items.
 end note
