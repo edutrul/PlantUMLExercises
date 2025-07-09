@@ -7,6 +7,25 @@
 @type: sequence
 @description: Shows how a content editor submits a form in Drupal, which triggers a webhook to Lucidworks to perform partial indexing.
 @related: ING-004, ING-006
+
+🛠 Auto Partial Update via Webhook
+
+Scenario:
+1. A content editor submits a press release form in Drupal UI.
+2. Drupal triggers a node update event, which the webhook handler listens for.
+3. The system reindexes the updated content using the Drupal Search API.
+4. Drupal JSON Export prepares the exportable payload.
+5. A webhook is sent to Lucidworks with the updated entity ID.
+6. Lucidworks fetches the updated data using ?since=timestamp or ?id=
+7. Fusion indexing pipeline starts and ingests the partial data into the Fusion Collection.
+
+Requirements:
+• Use actor for Editor.
+• Use participants for Drupal UI, Webhook Handler, Drupal Search API, Drupal JSON Export, Custom Connector, Indexing Pipeline, and Fusion Collection.
+• Highlight Search API as a contrib module.
+• Mention that JSON Export can be custom or contributed.
+• Emphasize that partial indexing requires query param support.
+• Style via `<style>` block for consistency.
 '/
 
 <style>
