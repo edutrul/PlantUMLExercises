@@ -1,0 +1,136 @@
+@startuml
+
+/' 
+@id: ING-005
+@file: ING-005--custom-auto-webhook.puml
+@title: Auto Partial Update via Webhook
+@type: sequence
+@description: Shows how a content editor submits a form in Drupal, which triggers a webhook to Lucidworks to perform partial indexing.
+@related: ING-004, ING-006
+'/
+
+<style>
+  title {
+    FontSize 30
+  }
+  box {
+    FontSize 25
+    .drupalPlatform {
+      BackgroundColor #F0F0F0
+    }
+    .fusionPlatform {
+      BackgroundColor #E0F7F7
+    }
+  }
+</style>
+
+title Auto Partial Update via Webhook
+
+autonumber
+
+actor Editor
+
+box "Drupal Platform" <<drupalPlatform>>
+  participant DrupalUI [
+    =📝 Drupal UI
+    ----
+    ""Press Release Form""
+  ]
+  participant WebhookHandler [
+    =🧠 Webhook Handler
+    ----
+    ""Node Updated Trigger""
+  ]
+  participant SearchAPI [
+    =📦 Drupal Search API
+    ----
+    ""Indexer (Contrib Module)""
+  ]
+  participant DrupalExport [
+    =🔄 Drupal JSON Export
+    ----
+    ""/fusion-export/{$server}/{$index}""
+  ]
+end box
+
+box "Fusion Platform" <<fusionPlatform>>
+  participant CustomConnector [
+    =💡 Custom Connector
+    ----
+    ""Webhook Receiver""
+  ]
+  participant IndexingPipeline [
+    =📊 Fusion Indexing
+    ----
+    ""Pipeline""
+  ]
+  database "📂 Fusion Collection" as FusionCollection
+end box
+
+Editor -> DrupalUI: Submit press release form
+note right of DrupalUI: Standard Drupal node form
+activate DrupalUI
+DrupalUI -> WebhookHandler: Trigger node update event
+deactivate DrupalUI
+
+activate WebhookHandler
+WebhookHandler -> SearchAPI: Trigger re-index for updated content
+deactivate WebhookHandler
+
+activate SearchAPI
+note over SearchAPI
+  Uses Drupal Search API (contrib module)
+  to build data export
+end note
+SearchAPI -> DrupalExport: Prepare exportable data for this update
+deactivate SearchAPI
+
+note over DrupalExport
+  Acts as middleware between
+  Drupal and Fusion Connector.
+  Can be contributed or custom-built.
+end note
+
+WebhookHandler -> CustomConnector: Send webhook with node ID
+
+activate CustomConnector
+note right of CustomConnector
+  Trigger includes updated entity ID.
+  Requires export endpoint to support
+  filtering (e.g., ?id or ?since=timestamp)
+end note
+
+CustomConnector -> DrupalExport: Request export with **?since=timestamp**
+activate DrupalExport
+DrupalExport --> CustomConnector: Return partial content
+deactivate DrupalExport
+
+CustomConnector -> IndexingPipeline: Start partial indexing job
+deactivate CustomConnector
+
+activate IndexingPipeline
+IndexingPipeline -> FusionCollection: Ingest partial data
+deactivate IndexingPipeline
+
+note bottom
+  ⚠️ This flow supports *partial indexing* only if
+  the Drupal export endpoint supports filtering
+  via query parameters like `?since=timestamp` or `?id=...`.
+
+  Lucidworks must ensure connector logic handles this properly.
+end note
+
+legend bottom
+|= Component             |= Meaning |
+| **Drupal Platform**    ||
+| 📝 Drupal UI           | Content form interface (e.g. Press Release) |
+| 🧠 Webhook Handler     | Triggers when node is updated |
+| 📦 Drupal Search API   | Indexer (Contrib module) |
+| 🔄 Drupal JSON Export  | Acts as middleware endpoint |
+| **Fusion Platform**    ||
+| 💡 Custom Connector    | Receives webhooks and starts ingestion |
+| 📊 Fusion Indexing     | Lucidworks pipeline to transform & ingest |
+| 📂 Fusion Collection   | Final Lucidworks index target |
+endlegend
+
+@enduml
