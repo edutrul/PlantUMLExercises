@@ -2,17 +2,17 @@
 
 /' 
 @id: ING-005
-@file: ING-005--custom-auto-webhook.puml
-@title: Auto Partial Update via Webhook
+@file: ING-005--custom-auto-webhook-node-events.puml
+@title: Auto Partial Update via Webhook (on Node Create / Update / Delete)
 @type: sequence
-@description: Shows how a content editor submits a form in Drupal, which triggers a webhook to Lucidworks to perform partial indexing.
+@description: Shows how a content editor submits a form in Drupal, triggering a webhook that allows Lucidworks to fetch and index updated node content using partial update.
 @related: ING-004, ING-006
 
-🛠 Auto Partial Update via Webhook
+🛠 Auto Partial Update via Webhook (on Node Create / Update / Delete)
 
 Scenario:
 1. A content editor submits a press release form in Drupal UI.
-2. Drupal triggers a node update event, which the webhook handler listens for.
+2. Drupal triggers a node event (create, update, or delete), which the webhook handler listens for.
 3. The system reindexes the updated content using the Drupal Search API.
 4. Drupal JSON Export prepares the exportable payload.
 5. A webhook is sent to Lucidworks with the updated entity ID.
@@ -43,7 +43,7 @@ Requirements:
   }
 </style>
 
-title Auto Partial Update via Webhook
+title Auto Partial Update via Webhook (on Node Create / Update / Delete)
 
 autonumber
 
@@ -55,10 +55,10 @@ box "Drupal Platform" <<drupalPlatform>>
     ----
     ""Press Release Form""
   ]
-  participant WebhookHandler [
-    =🧠 Webhook Handler
+  participant DrupalWebhookHandler [
+    =🧠 Drupal Webhook Handler
     ----
-    ""Node Updated Trigger""
+    ""Node Event Trigger""
   ]
   participant SearchAPI [
     =📦 Drupal Search API
@@ -73,7 +73,7 @@ box "Drupal Platform" <<drupalPlatform>>
 end box
 
 box "Fusion Platform" <<fusionPlatform>>
-  participant CustomConnector [
+  participant FusionCustomConnector [
     =💡 Custom Connector
     ----
     ""Webhook Receiver""
@@ -89,12 +89,12 @@ end box
 Editor -> DrupalUI: Submit press release form
 note right of DrupalUI: Standard Drupal node form
 activate DrupalUI
-DrupalUI -> WebhookHandler: Trigger node update event
+DrupalUI -> DrupalWebhookHandler: Trigger node event (create/update/delete)
 deactivate DrupalUI
 
-activate WebhookHandler
-WebhookHandler -> SearchAPI: Trigger re-index for updated content
-deactivate WebhookHandler
+activate DrupalWebhookHandler
+DrupalWebhookHandler -> SearchAPI: Trigger re-index for updated content
+deactivate DrupalWebhookHandler
 
 activate SearchAPI
 note over SearchAPI
@@ -110,22 +110,22 @@ note over DrupalExport
   Can be contributed or custom-built.
 end note
 
-WebhookHandler -> CustomConnector: Send webhook with node ID
+DrupalWebhookHandler -> FusionCustomConnector: Send webhook with node ID
 
-activate CustomConnector
-note right of CustomConnector
+activate FusionCustomConnector
+note right of FusionCustomConnector
   Trigger includes updated entity ID.
   Requires export endpoint to support
   filtering (e.g., ?id or ?since=timestamp)
 end note
 
-CustomConnector -> DrupalExport: Request export with **?since=timestamp**
+FusionCustomConnector -> DrupalExport: Request export with **?since=timestamp**
 activate DrupalExport
-DrupalExport --> CustomConnector: Return partial content
+DrupalExport --> FusionCustomConnector: Return partial content
 deactivate DrupalExport
 
-CustomConnector -> IndexingPipeline: Start partial indexing job
-deactivate CustomConnector
+FusionCustomConnector -> IndexingPipeline: Start partial indexing job
+deactivate FusionCustomConnector
 
 activate IndexingPipeline
 IndexingPipeline -> FusionCollection: Ingest partial data

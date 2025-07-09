@@ -1,0 +1,120 @@
+@startuml
+
+/' 
+@id: ING-006
+@file: ING-006--custom-manual-id.puml
+@title: Manual Partial Update by ID
+@type: sequence
+@description: Shows how an admin manually triggers a partial indexing job by passing a node ID to Lucidworks.
+@related: ING-005, ING-004
+
+🛠 Manual Partial Update by ID
+
+Scenario:
+1. An admin enters a node ID in a custom UI or script.
+2. Lucidworks receives the request and queries the Drupal JSON export endpoint using `?id=123`.
+3. Drupal prepares the corresponding export using the Search API.
+4. The content is returned and passed through the indexing pipeline into the Fusion Collection.
+
+Requirements:
+• Use actor for Admin.
+• Use participants for Fusion Connector, Drupal JSON Export, Drupal Search API, Indexing Pipeline, and Fusion Collection.
+• Clarify that JSON Export must support filtering by ID.
+• Mention Search API is contrib.
+• Use style block for consistent formatting.
+'/
+
+<style>
+  title {
+    FontSize 30
+  }
+  box {
+    FontSize 25
+    .drupalPlatform {
+      BackgroundColor #F0F0F0
+    }
+    .fusionPlatform {
+      BackgroundColor #E0F7F7
+    }
+  }
+</style>
+
+title Manual Partial Update by ID
+
+autonumber
+
+actor Admin
+
+box "Fusion Platform" <<fusionPlatform>>
+  participant CustomConnector [
+    =💡 Custom Connector
+    ----
+    ""Admin Trigger with ID""
+  ]
+end box
+
+box "Drupal Platform" <<drupalPlatform>>
+  participant DrupalExport [
+    =🔄 Drupal JSON Export
+    ----
+    ""/fusion-export/{$server}/{$index}?id=123""
+  ]
+  participant SearchAPI [
+    =📦 Drupal Search API
+    ----
+    ""Indexer (Contrib Module)""
+  ]
+end box
+
+box "Fusion Platform" <<fusionPlatform>>
+  participant IndexingPipeline [
+    =📊 Fusion Indexing
+    ----
+    ""Pipeline""
+  ]
+  database "📂 Fusion Collection" as FusionCollection
+end box
+
+Admin -> CustomConnector: Trigger export for **node ID = 123**
+note right of CustomConnector
+  Admin action may come from UI or CLI\nand triggers ingestion of one entity
+end note
+
+CustomConnector -> DrupalExport: Request content via **?id=123**
+activate DrupalExport
+
+DrupalExport -> SearchAPI: Build export for matching ID
+note over SearchAPI
+  Uses Drupal Search API (contrib module)
+  to fetch and prepare exportable data
+end note
+SearchAPI --> DrupalExport: Return indexed result
+DrupalExport --> CustomConnector: Return content for ID
+deactivate DrupalExport
+
+CustomConnector -> IndexingPipeline: Start partial indexing job
+deactivate CustomConnector
+
+activate IndexingPipeline
+IndexingPipeline -> FusionCollection: Ingest partial data
+deactivate IndexingPipeline
+
+note bottom
+  ⚠️ Partial updates require Drupal JSON Export
+  to support query parameters like `?id=123`.
+
+  Lucidworks connector must pass ID dynamically.
+end note
+
+legend bottom
+|= Component             |= Meaning |
+| **Drupal Platform**    ||
+| 🔄 Drupal JSON Export  | Acts as middleware endpoint |
+| 📦 Drupal Search API   | Indexer (Contrib module) |
+| **Fusion Platform**    ||
+| 💡 Custom Connector    | Accepts manual triggers from admin |
+| 📊 Fusion Indexing     | Lucidworks pipeline to transform & ingest |
+| 📂 Fusion Collection   | Final Lucidworks index target |
+endlegend
+
+@enduml
