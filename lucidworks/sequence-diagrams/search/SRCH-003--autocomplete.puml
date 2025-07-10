@@ -1,0 +1,86 @@
+@startuml
+
+/' 
+@id: SRCH-003
+@file: SRCH-003--autocomplete.puml
+@title: Autocomplete (TypeAhead) Search Flow – Drupal → Fusion
+@type: sequence
+@description: Triggered on typing or focus in the search input, Drupal uses HTMX to call /search/autocomplete which returns suggestions via a specialized Fusion Query Pipeline.
+
+📘 Scenario:
+1. User types or focuses on the search field.
+2. HTMX sends a GET to `/search/autocomplete?q=term`.
+3. CosmosFusionQuery module relays to Fusion’s TypeAhead query pipeline.
+4. Fusion returns JSON suggestions.
+5. CosmosFusionQuery renders HTML and HTMX injects suggestions.
+
+✅ Requirements:
+• Triggered by focus or keypress via HTMX.
+• Uses `/search/autocomplete` endpoint.
+• CosmosFusionQuery handles GET to Fusion.
+• Uses a dedicated Fusion Query Pipeline for TypeAhead.
+• Suggestions rendered with HTMX (no JS needed).
+'/
+
+<style>
+  title {
+    FontSize 30
+  }
+  box {
+    FontSize 25
+    .drupalPlatform {
+      BackgroundColor #F0F0F0
+    }
+    .fusionPlatform {
+      BackgroundColor #E0F7F7
+    }
+  }
+</style>
+
+title Autocomplete (TypeAhead) Search Flow – Drupal → Fusion
+
+autonumber
+
+actor "User" as User
+
+box "Drupal Platform" <<drupalPlatform>>
+  participant SearchInput [
+    =🔎 Search Input (Twig + HTMX)
+    ----
+    ""Focus or typing triggers /search/autocomplete""
+  ]
+  participant CosmosFusionQuery [
+    =⚡️ Cosmos Fusion Query (custom module)
+    ----
+    ""Handles GET for TypeAhead""
+  ]
+end box
+
+box "Fusion Platform" <<fusionPlatform>>
+  participant TypeAheadPipeline [
+    =🤖 Fusion Query Pipeline (TypeAhead)
+    ----
+    ""/api/apps/{app}/query/{pipeline}""
+  ]
+end box
+
+User -> SearchInput: Focus or keypress
+note right of SearchInput
+  HTMX triggers GET to `/search/autocomplete?q=term`
+  🔒 Requires minimum 3 characters to execute query
+  (avoids unnecessary load & result spam)
+end note
+
+SearchInput -> CosmosFusionQuery: GET /search/autocomplete?q=term
+
+activate CosmosFusionQuery
+CosmosFusionQuery -> TypeAheadPipeline: GET /query/{pipeline}?q=term
+TypeAheadPipeline --> CosmosFusionQuery: Return JSON suggestions
+deactivate CosmosFusionQuery
+
+CosmosFusionQuery --> SearchInput: Render & return suggestions (HTML)
+note right of SearchInput
+  HTMX injects the list of suggestions
+end note
+
+@enduml
