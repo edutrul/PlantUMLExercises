@@ -77,7 +77,7 @@ FusionQueryPipeline --> CosmosFusionQuery: JSON response
 note over CosmosFusionQuery
   {
     results: [...],
-    relatedQueries: ["ICU bed", "lift", "patient transport"]
+    **<back:khaki>relatedQueries: ["ICU bed", "lift", "patient transport"]</back>**
   }
 end note
 deactivate CosmosFusionQuery
