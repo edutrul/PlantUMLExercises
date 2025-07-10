@@ -1,3 +1,5 @@
+@startuml
+
 /' 
 @id: ING-003
 @file: ING-003--restv2-scheduled.puml
@@ -102,3 +104,5 @@ legend bottom
 | **Drupal Platform**     ||
 | 🔄 Drupal JSON Export   | JSON endpoint exposed by Drupal for Fusion to crawl |
 endlegend
+
+@enduml
