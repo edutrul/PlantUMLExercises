@@ -1,0 +1,90 @@
+@startuml
+
+/' 
+@id: SRCH-004
+@file: SRCH-004--multi-collection-search.puml
+@title: Federated Search Flow
+@type: sequence
+@description: Federated search triggered via HTMX input or filter click, processed by CosmosFusionQuery module through a Fusion Query Pipeline hitting multiple collections in parallel.
+
+📘 Scenario:
+1. User types a query OR clicks a category/tag filter link.
+2. Drupal (CosmosFusionQuery module) receives the request via `/search/ajax`.
+3. The request is forwarded to a Fusion Query Pipeline.
+4. Fusion uses internal config to query multiple collections (federated).
+5. Results are returned, rendered by Drupal, and HTMX injects the response.
+
+✅ Requirements:
+• Trigger can be search input or facet/filter click.
+• CosmosFusionQuery routes to `/search/ajax`.
+• Fusion handles multi-collection logic in a single pipeline.
+• Drupal renders HTML and HTMX injects.
+'/
+
+<style>
+  title {
+    FontSize 30
+  }
+  box {
+    FontSize 25
+    .drupalPlatform {
+      BackgroundColor #F0F0F0
+    }
+    .fusionPlatform {
+      BackgroundColor #E0F7F7
+    }
+  }
+</style>
+
+title Federated Search Flow
+
+autonumber
+
+actor "User" as User
+
+box "Drupal Platform" <<drupalPlatform>>
+  participant SearchTrigger [
+    =🔎 Search Input or Filter Link
+    ----
+    ""/search/ajax?q=...&fq=...""
+  ]
+  participant CosmosFusionQuery [
+    =🔄 Cosmos Fusion Query (custom module)
+    ----
+    ""Handles federated GET to Fusion""
+  ]
+end box
+
+box "Fusion Platform" <<fusionPlatform>>
+  participant FusionQueryPipeline [
+    =⚙️ Fusion Federated Query Pipeline
+    ----
+    ""Hits multiple collections based on config""
+  ]
+end box
+
+note over User
+  🔄 Triggered by typing OR
+  clicking a filter link
+end note
+
+User -> SearchTrigger: Initiate federated search (via HTMX)
+SearchTrigger -> CosmosFusionQuery: GET /search/ajax?q=...&fq=...
+
+activate CosmosFusionQuery
+note over CosmosFusionQuery
+  ⚙️ FEDERATED search collections are defined 
+  by Drupal admin config. Admin selects 
+  which site types (e.g., Edu A, Pro B)
+  should be included in the Fusion request.
+end note
+CosmosFusionQuery -> FusionQueryPipeline: GET /query/{pipeline}?q=...&fq=...
+FusionQueryPipeline --> CosmosFusionQuery: Return aggregated JSON results
+deactivate CosmosFusionQuery
+
+CosmosFusionQuery --> SearchTrigger: Return rendered HTML
+note right of SearchTrigger
+  Injects results via HTMX
+end note
+
+@enduml
