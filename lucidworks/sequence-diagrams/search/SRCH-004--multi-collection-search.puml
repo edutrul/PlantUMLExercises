@@ -2,23 +2,24 @@
 
 /' 
 @id: SRCH-004
-@file: SRCH-004--multi-collection-search.puml
+@file: SRCH-004--federated-search-flow.puml
 @title: Federated Search Flow
 @type: sequence
-@description: Federated search triggered via HTMX input or filter click, processed by CosmosFusionQuery module through a Fusion Query Pipeline hitting multiple collections in parallel.
+@description: Federated search triggered via HTMX input or filter click, processed by CosmosFusionQuery module through a Fusion Query Pipeline that performs federated search across multiple datasources.
 
 📘 Scenario:
 1. User types a query OR clicks a category/tag filter link.
 2. Drupal (CosmosFusionQuery module) receives the request via `/search/ajax`.
 3. The request is forwarded to a Fusion Query Pipeline.
-4. Fusion uses internal config to query multiple collections (federated).
+4. Fusion performs a federated search across multiple datasources.
 5. Results are returned, rendered by Drupal, and HTMX injects the response.
 
 ✅ Requirements:
 • Trigger can be search input or facet/filter click.
 • CosmosFusionQuery routes to `/search/ajax`.
-• Fusion handles multi-collection logic in a single pipeline.
-• Drupal renders HTML and HTMX injects.
+• Fusion uses a single pipeline to perform federated search.
+• Datasources selected via Drupal admin config.
+• Drupal renders HTML and HTMX injects it.
 '/
 
 <style>
@@ -51,15 +52,15 @@ box "Drupal Platform" <<drupalPlatform>>
   participant CosmosFusionQuery [
     =🔄 Cosmos Fusion Query (custom module)
     ----
-    ""Handles federated GET to Fusion""
+    "Handles federated GET to Fusion"
   ]
 end box
 
 box "Fusion Platform" <<fusionPlatform>>
   participant FusionQueryPipeline [
-    =⚙️ Fusion Federated Query Pipeline
+    =⚙️ Fusion Query Pipeline
     ----
-    ""Hits multiple collections based on config""
+    "Federated search across datasources"
   ]
 end box
 
@@ -72,11 +73,12 @@ User -> SearchTrigger: Initiate federated search (via HTMX)
 SearchTrigger -> CosmosFusionQuery: GET /search/ajax?q=...&fq=...
 
 activate CosmosFusionQuery
-note over CosmosFusionQuery
-  ⚙️ FEDERATED search collections are defined 
-  by Drupal admin config. Admin selects 
+note over CosmosFusionQuery #aqua
+  ⚙️ Federated search datasources are defined 
+  via Drupal admin config. Admin selects 
   which site types (e.g., Edu A, Pro B)
-  should be included in the Fusion request.
+  to include in the Fusion request. And this
+  config will live under this module.
 end note
 CosmosFusionQuery -> FusionQueryPipeline: GET /query/{pipeline}?q=...&fq=...
 FusionQueryPipeline --> CosmosFusionQuery: Return aggregated JSON results
