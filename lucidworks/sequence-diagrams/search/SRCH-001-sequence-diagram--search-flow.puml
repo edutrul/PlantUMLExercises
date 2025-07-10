@@ -5,12 +5,12 @@
 @file: SRCH-001--user-search-flow.puml
 @title: User Search Flow – Drupal → Fusion
 @type: sequence
-@description: Basic user search triggered via HTMX (or fallback), handled by fusion_export module calling Fusion Query Pipeline.
+@description: Basic user search triggered via HTMX (or fallback), handled by `cosmos_fusion_query` (a custom Drupal module) calling Fusion Query Pipeline.
 
 📘 Scenario:
 1. User enters a search term into a form rendered by a Drupal Twig template using HTMX.
 2. The form sends a GET request to `/search/ajax` (HTMX) or `/search` (fallback).
-3. The Drupal `fusion_export` controller forwards the query to Fusion’s Query Pipeline.
+3. The Drupal `CosmosFusionQuery` (custom module) controller forwards the query to Fusion’s Query Pipeline.
 4. Fusion responds with JSON results.
 5. Drupal renders the HTML response.
 6. HTMX injects it dynamically or fallback reloads the page.
@@ -18,7 +18,7 @@
 ✅ Requirements:
 • Actor for User.
 • Search form lives in Drupal frontend (Twig).
-• Use FusionExportController for relay logic.
+• Use `CosmosFusionQuery` as the module handling search routes (custom).
 • Show `/search/ajax` vs fallback flow.
 • Show GET to Fusion query endpoint.
 '/
@@ -50,8 +50,8 @@ box "Drupal Platform" <<drupalPlatform>>
     ----
     ""/search or /search/ajax""
   ]
-  participant FusionExportController [
-    =🧩 fusion_export
+  participant CosmosFusionQuery [
+    =🔄 Cosmos Fusion Query (custom module)
     ----
     ""Handles GET and relays to Fusion""
   ]
@@ -71,14 +71,14 @@ note right of SearchForm
   or fallback to `/search`
 end note
 
-SearchForm -> FusionExportController: GET request with `q=term`
+SearchForm -> CosmosFusionQuery: GET request with `q=term`
 
-activate FusionExportController
-FusionExportController -> FusionQueryAPI: GET /query/{pipeline}?q=term
-FusionQueryAPI --> FusionExportController: Return JSON search results
-deactivate FusionExportController
+activate CosmosFusionQuery
+CosmosFusionQuery -> FusionQueryAPI: GET /query/{pipeline}?q=term
+FusionQueryAPI --> CosmosFusionQuery: Return JSON search results
+deactivate CosmosFusionQuery
 
-FusionExportController --> SearchForm: Render & return HTML results
+CosmosFusionQuery --> SearchForm: Render & return HTML results
 note right of SearchForm
   Injects into page (HTMX)
   or full reload (fallback)
