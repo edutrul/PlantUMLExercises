@@ -14,7 +14,7 @@ Scenario:
 1. A Lucidworks Admin sends a manual HTTP request (e.g., via Postman or internal UI) specifying a Drupal Node ID.
 2. The Fusion Custom Connector sends a filtered request to Drupal JSON Export using `?id=123`.
 3. Drupal Search API prepares the exportable data for that node.
-4. Drupal JSON Export returns the filtered data.
+4. Drupal JSON Export returns the filtered data to Fusion Custom Connector.
 5. Fusion indexing pipeline ingests the updated content into the Fusion Collection.
 
 Requirements:
@@ -73,7 +73,7 @@ box "Fusion Platform" <<fusionPlatform>>
     ----
     ""Pipeline""
   ]
-  database FusionCollection as "Fusion Collection"
+  database "🗃️ Fusion Collection" as FusionCollection
 end box
 
 FusionAdmin -> FusionCustomConnector: Send HTTP request with **Node ID 123**
@@ -84,8 +84,14 @@ note right of FusionCustomConnector
   using `?id=123`
 end note
 
-FusionCustomConnector -> DrupalExport: Request export for ID
+FusionCustomConnector -> DrupalExport: Request export for Node ID
 activate DrupalExport
+
+note over DrupalExport
+  ⚠️ Requires JSON Export endpoint to support
+  query params like `?id=...`. Fusion Connector
+  must construct and send that request.
+end note
 
 note over SearchAPI
   Uses Drupal Search API (contrib module)
@@ -93,6 +99,7 @@ note over SearchAPI
 end note
 DrupalExport -> SearchAPI: Fetch node data
 SearchAPI --> DrupalExport: Return exportable data
+DrupalExport --> FusionCustomConnector: Return JSON data for Node ID
 deactivate DrupalExport
 
 FusionCustomConnector -> IndexingPipeline: Start partial indexing
@@ -102,13 +109,6 @@ activate IndexingPipeline
 IndexingPipeline -> FusionCollection: Ingest node data
 deactivate IndexingPipeline
 
-note bottom
-  ⚠️ This partial update flow depends on the
-  JSON export endpoint supporting query params
-  like `?id=...`. Lucidworks connector must
-  be able to construct and send that request.
-end note
-
 legend bottom
 |= Component             |= Meaning |
 | **Drupal Platform**    ||
@@ -117,7 +117,7 @@ legend bottom
 | **Fusion Platform**    ||
 | 💡 Fusion Custom Connector | Handles webhook/manual ingestion |
 | 📊 Fusion Indexing     | Lucidworks pipeline to transform & ingest |
-| Fusion Collection      | Final Lucidworks index |
+| 🗃️ Fusion Collection      | Final Lucidworks index |
 endlegend
 
 @enduml
