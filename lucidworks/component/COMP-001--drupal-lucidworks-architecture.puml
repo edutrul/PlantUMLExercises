@@ -1,0 +1,55 @@
+@startuml
+
+/' 
+@id: COMP-001
+@file: COMP-001--drupal-lucidworks-architecture.puml
+@title: System Component Diagram – Drupal + Lucidworks Integration
+@type: component
+@description: Overview of system components across Drupal and Lucidworks platforms, highlighting integration points and responsibilities.
+@related: ING-001 → ING-006
+'/
+
+skinparam componentStyle rectangle
+
+package "Lucidworks Platform" {
+  [Fusion REST V2 Connector\n(Fallback Option)] as RestV2 <<external>>
+  [Fusion Custom Connector] as CustomConnector <<custom>>
+  [Fusion Indexing Pipeline] <<external>>
+  [Fusion Collection] <<external>>
+  [Fusion Scheduler / Cron] <<external>>
+}
+
+package "Drupal Platform" {
+  [Drupal CMS] <<core>>
+  [Drupal UI (Forms)] <<custom>>
+  [Drupal Search API] <<contrib>>
+  [Drupal JSON Export] <<custom>>
+  [Webhook Handler] <<custom>>
+}
+
+[Drupal CMS] --> [Drupal UI (Forms)]
+[Drupal CMS] --> [Drupal Search API]
+[Drupal CMS] --> [Drupal JSON Export]
+[Drupal CMS] --> [Webhook Handler]
+
+[Webhook Handler] --> CustomConnector
+[Fusion Scheduler / Cron] --> RestV2
+
+RestV2 --> [Drupal JSON Export]
+CustomConnector --> [Drupal JSON Export]
+
+RestV2 --> [Fusion Indexing Pipeline]
+CustomConnector --> [Fusion Indexing Pipeline]
+[Fusion Indexing Pipeline] --> [Fusion Collection]
+
+note bottom of RestV2
+  🔁 Fallback option if a custom
+  connector is not implemented
+end note
+
+note bottom of CustomConnector
+  ✅ Preferred option for webhook-based
+  partial updates from Drupal
+end note
+
+@enduml

@@ -1,0 +1,72 @@
+@startuml
+
+/' 
+@id: COMP-002
+@file: COMP-002--fusion-architecture-multisite.puml
+@title: Fusion Architecture – Multisite Indexing & Search
+@type: component
+@description: Shows how Drupal multisites (pro, edu, etc.) connect to Lucidworks Fusion using individual datasources and query pipelines with a shared indexing pipeline and central collection.
+@related:
+'/
+
+<style>
+  component {
+    FontSize 14
+    Padding 10
+  }
+  title {
+    FontSize 24
+  }
+  database {
+    FontSize 28
+    Padding 12
+    LineThickness 2
+    BackgroundColor #F9F9F9
+  }
+</style>
+
+title Fusion Architecture – Multisite Indexing & Search
+
+rectangle " " {
+  package "Drupal Sites" {
+    [📦 pro_baxter_com_datasource] <<component>>
+    [📦 edu_baxter_com_datasource] <<component>>
+    [📦 pro_baxter_ca_datasource] <<component>>
+  }
+
+  package "Fusion Platform" {
+    package "Indexing Pipelines" {
+      [🔁 shared_indexing_pipeline] <<component>>
+    }
+
+    package "Query Pipelines" {
+      [🔎 pro_baxter_com_query_pipeline] <<component>>
+      [🔎 edu_baxter_com_query_pipeline] <<component>>
+      [🔎 pro_baxter_ca_query_pipeline] <<component>>
+    }
+
+    database "🗃️   COSMOS Collection   " as cosmos_collection
+  }
+}
+
+' Indexing flow
+[📦 pro_baxter_com_datasource] --> [🔁 shared_indexing_pipeline]
+[📦 edu_baxter_com_datasource] --> [🔁 shared_indexing_pipeline]
+[📦 pro_baxter_ca_datasource] --> [🔁 shared_indexing_pipeline]
+
+[🔁 shared_indexing_pipeline] --> cosmos_collection
+
+' Query flow
+[🔎 pro_baxter_com_query_pipeline] --> cosmos_collection
+[🔎 edu_baxter_com_query_pipeline] --> cosmos_collection
+[🔎 pro_baxter_ca_query_pipeline] --> cosmos_collection
+
+legend bottom
+|= Symbol |= Meaning |
+| 📦       | Drupal-specific datasource |
+| 🔎       | Site-specific query pipeline |
+| 🔁       | Shared indexing pipeline |
+| 🗃️       | Shared Fusion Collection |
+endlegend
+
+@enduml

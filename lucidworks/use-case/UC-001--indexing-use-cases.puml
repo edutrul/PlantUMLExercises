@@ -1,0 +1,49 @@
+@startuml
+
+/'
+@id: UC-001
+@file: UC-001--indexing-use-cases.puml
+@title: Indexing Roles and Actions
+@type: usecase
+@description: Describes how different actors (Editor, Admin, Fusion System) interact with the indexing flow from Drupal to Lucidworks.
+@related: ING-001, ING-005, ING-006
+'/
+
+left to right direction
+skinparam packageStyle rectangle
+
+actor Editor
+actor Admin
+actor "Fusion System" as Fusion
+
+rectangle "Drupal Platform" {
+  usecase "Submit or Update Node\n(e.g. Press Release)" as UC1
+  usecase "Trigger Indexing via UI" as UC2
+  usecase "Trigger Indexing via CLI (Drush)" as UC3
+  usecase "Trigger Indexing by ID" as UC4
+  usecase "Expose JSON Export\n(REST endpoint)" as UC6
+}
+
+rectangle "Lucidworks Platform" {
+  usecase "Schedule Job\n(every 5min)" as UC5
+  usecase "Run Indexing Pipeline" as UC7
+  usecase "Ingest into Fusion Collection" as UC8
+}
+
+Editor --> UC1
+UC1 --> UC6 : via Webhook (Auto)
+
+Admin --> UC2
+Admin --> UC3
+Admin --> UC4
+UC2 --> UC6
+UC3 --> UC6
+UC4 --> UC6
+
+Fusion --> UC5
+UC5 --> UC6 : periodic fetch
+
+UC6 --> UC7
+UC7 --> UC8
+
+@enduml
