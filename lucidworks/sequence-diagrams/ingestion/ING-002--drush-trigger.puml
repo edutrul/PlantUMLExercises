@@ -15,7 +15,7 @@
 Scenario:
 1. Admin runs the `$ drush fusion:export` command from the terminal.
 2. Drupal re-indexes content using the Search API and builds the exportable data.
-3. Drupal triggers a Fusion connector to ingest tßhe content from the JSON endpoint.
+3. Drupal triggers a Fusion connector to ingest the content from the JSON endpoint.
 4. Fusion fetches the data, starts the indexing job, and populates the Fusion Collection.
 
 Requirements:

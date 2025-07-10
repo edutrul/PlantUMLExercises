@@ -98,4 +98,4 @@ legend bottom
 | 🔄 Drupal JSON Export   | JSON endpoint exposed by Drupal for Fusion to crawl |
 endlegend
 
-@endumlß
+@enduml

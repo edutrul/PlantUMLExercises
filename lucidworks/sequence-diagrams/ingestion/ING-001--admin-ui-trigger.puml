@@ -49,7 +49,7 @@ actor "Admin" as Admin
 
 box "Drupal Platform" <<drupalPlatform>>
   participant DrupalUI [
-    =🖱️ Drupal UIß
+    =🖱️ Drupal UI
     ----
     ""Sync Now Button (Custom)""
   ]

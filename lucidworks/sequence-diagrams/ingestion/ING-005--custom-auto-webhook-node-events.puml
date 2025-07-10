@@ -83,7 +83,7 @@ box "Fusion Platform" <<fusionPlatform>>
     ----
     ""Pipeline""
   ]
-  database "📂 Fusion Collection" as FusionCollection
+  database "🗃️ Fusion Collection" as FusionCollection
 end box
 
 Editor -> DrupalUI: Submit press release form
@@ -149,7 +149,7 @@ legend bottom
 | **Fusion Platform**    ||
 | 💡 Custom Connector    | Receives webhooks and starts ingestion |
 | 📊 Fusion Indexing     | Lucidworks pipeline to transform & ingest |
-| 📂 Fusion Collection   | Final Lucidworks index target |
+| 🗃️ Fusion Collection   | Final Lucidworks index target |
 endlegend
 
 @enduml

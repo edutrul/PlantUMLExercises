@@ -2,26 +2,27 @@
 
 /' 
 @id: ING-006
-@file: ING-006--custom-manual-id.puml
-@title: Manual Partial Update by ID
+@file: ING-006--fusion-manual-partial-id.puml
+@title: Lucidworks Manual Partial Update by Node ID
 @type: sequence
-@description: Shows how an admin manually triggers a partial indexing job by passing a node ID to Lucidworks.
-@related: ING-005, ING-004
+@description: Shows how a Lucidworks Admin manually triggers a partial indexing update by Node ID via the Fusion Custom Connector.
+@related: ING-005
 
-🛠 Manual Partial Update by ID
+🛠 Lucidworks Manual Partial Update by Node ID
 
 Scenario:
-1. An admin enters a node ID in a custom UI or script.
-2. Lucidworks receives the request and queries the Drupal JSON export endpoint using `?id=123`.
-3. Drupal prepares the corresponding export using the Search API.
-4. The content is returned and passed through the indexing pipeline into the Fusion Collection.
+1. A Lucidworks Admin sends a manual HTTP request (e.g., via Postman or internal UI) specifying a Drupal Node ID.
+2. The Fusion Custom Connector sends a filtered request to Drupal JSON Export using `?id=123`.
+3. Drupal Search API prepares the exportable data for that node.
+4. Drupal JSON Export returns the filtered data.
+5. Fusion indexing pipeline ingests the updated content into the Fusion Collection.
 
 Requirements:
-• Use actor for Admin.
-• Use participants for Fusion Connector, Drupal JSON Export, Drupal Search API, Indexing Pipeline, and Fusion Collection.
-• Clarify that JSON Export must support filtering by ID.
-• Mention Search API is contrib.
-• Use style block for consistent formatting.
+• Use actor for Lucidworks Admin.
+• Use participants for Fusion Custom Connector, Drupal JSON Export, Drupal Search API, Indexing Pipeline, and Fusion Collection.
+• Highlight Search API as a contrib module.
+• Mention that JSON Export can be custom or contributed.
+• Style via <style> block for consistency.
 '/
 
 <style>
@@ -39,17 +40,17 @@ Requirements:
   }
 </style>
 
-title Manual Partial Update by ID
+title Lucidworks Manual Partial Update by Node ID
 
 autonumber
 
-actor Admin
+actor "Lucidworks Admin" as FusionAdmin
 
 box "Fusion Platform" <<fusionPlatform>>
-  participant CustomConnector [
-    =💡 Custom Connector
+  participant FusionCustomConnector [
+    =💡 Fusion Custom Connector
     ----
-    ""Admin Trigger with ID""
+    ""Manual Trigger with ID""
   ]
 end box
 
@@ -72,49 +73,51 @@ box "Fusion Platform" <<fusionPlatform>>
     ----
     ""Pipeline""
   ]
-  database "📂 Fusion Collection" as FusionCollection
+  database FusionCollection as "Fusion Collection"
 end box
 
-Admin -> CustomConnector: Trigger export for **node ID = 123**
-note right of CustomConnector
-  Admin action may come from UI or CLI\nand triggers ingestion of one entity
+FusionAdmin -> FusionCustomConnector: Send HTTP request with **Node ID 123**
+
+activate FusionCustomConnector
+note right of FusionCustomConnector
+  Sends filtered request to Drupal JSON Export
+  using `?id=123`
 end note
 
-CustomConnector -> DrupalExport: Request content via **?id=123**
+FusionCustomConnector -> DrupalExport: Request export for ID
 activate DrupalExport
 
-DrupalExport -> SearchAPI: Build export for matching ID
 note over SearchAPI
   Uses Drupal Search API (contrib module)
   to fetch and prepare exportable data
 end note
-SearchAPI --> DrupalExport: Return indexed result
-DrupalExport --> CustomConnector: Return content for ID
+DrupalExport -> SearchAPI: Fetch node data
+SearchAPI --> DrupalExport: Return exportable data
 deactivate DrupalExport
 
-CustomConnector -> IndexingPipeline: Start partial indexing job
-deactivate CustomConnector
+FusionCustomConnector -> IndexingPipeline: Start partial indexing
+deactivate FusionCustomConnector
 
 activate IndexingPipeline
-IndexingPipeline -> FusionCollection: Ingest partial data
+IndexingPipeline -> FusionCollection: Ingest node data
 deactivate IndexingPipeline
 
 note bottom
-  ⚠️ Partial updates require Drupal JSON Export
-  to support query parameters like `?id=123`.
-
-  Lucidworks connector must pass ID dynamically.
+  ⚠️ This partial update flow depends on the
+  JSON export endpoint supporting query params
+  like `?id=...`. Lucidworks connector must
+  be able to construct and send that request.
 end note
 
 legend bottom
 |= Component             |= Meaning |
 | **Drupal Platform**    ||
-| 🔄 Drupal JSON Export  | Acts as middleware endpoint |
+| 🔄 Drupal JSON Export  | Middleware to expose exportable node data |
 | 📦 Drupal Search API   | Indexer (Contrib module) |
 | **Fusion Platform**    ||
-| 💡 Custom Connector    | Accepts manual triggers from admin |
+| 💡 Fusion Custom Connector | Handles webhook/manual ingestion |
 | 📊 Fusion Indexing     | Lucidworks pipeline to transform & ingest |
-| 📂 Fusion Collection   | Final Lucidworks index target |
+| Fusion Collection      | Final Lucidworks index |
 endlegend
 
 @enduml
