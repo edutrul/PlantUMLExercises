@@ -1,0 +1,87 @@
+@startuml
+
+/' 
+@id: SRCH-002
+@file: SRCH-002--faceted-search.puml
+@title: Faceted Search Flow – Drupal → Fusion
+@type: sequence
+@description: User applies facet filters in UI using HTMX. CosmosFusionQuery handles updated GET request with `fq` parameters and fetches filtered results from Fusion.
+
+📘 Scenario:
+1. User clicks on a facet filter (e.g., category or tag link).
+2. HTMX triggers a GET request to `/search/ajax` with `fq` parameters.
+3. CosmosFusionQuery module handles the request.
+4. Sends filtered query to Fusion Query Pipeline with `q` and `fq`.
+5. Fusion responds with filtered JSON results and updated facet counts.
+6. Drupal renders the new HTML results.
+7. HTMX replaces the results container in the frontend.
+
+✅ Requirements:
+• Use `fq` parameters for facets.
+• Context should persist with `q` and multiple `fq`.
+• No scroll/animation required.
+• Show loading state if needed to avoid double clicks.
+• Uses same CosmosFusionQuery module/controller.
+'/
+
+<style>
+  title {
+    FontSize 30
+  }
+  box {
+    FontSize 25
+    .drupalPlatform {
+      BackgroundColor #F0F0F0
+    }
+    .fusionPlatform {
+      BackgroundColor #E0F7F7
+    }
+  }
+</style>
+
+title Faceted Search Flow – Drupal → Fusion
+
+autonumber
+
+actor "User" as User
+
+box "Drupal Platform" <<drupalPlatform>>
+  participant FacetLink [
+    =🧭 Facet Link (HTMX)
+    ----
+    ""e.g., /search/ajax?q=hospital&fq=brand:hillrom""
+  ]
+  participant CosmosFusionQuery [
+    =🔄 Cosmos Fusion Query (custom module)
+    ----
+    ""Handles GET with fq parameters""
+  ]
+end box
+
+box "Fusion Platform" <<fusionPlatform>>
+  participant FusionQueryAPI [
+    =⚙️ Fusion Query Pipeline
+    ----
+    ""/api/apps/{app}/query/{pipeline}""
+  ]
+end box
+
+User -> FacetLink: Click facet link (e.g., "Brand: Hillrom")
+note right of FacetLink
+  Sends GET with q + fq params:
+  `/search/ajax?q=...&fq=...`
+end note
+
+FacetLink -> CosmosFusionQuery: GET request with q & fq
+
+activate CosmosFusionQuery
+CosmosFusionQuery -> FusionQueryAPI: GET /query/{pipeline}?q=...&fq=...
+FusionQueryAPI --> CosmosFusionQuery: Return filtered JSON results
+deactivate CosmosFusionQuery
+
+CosmosFusionQuery --> FacetLink: Render & return updated HTML
+note right of FacetLink
+  HTMX replaces results section with filtered content
+end note
+
+@enduml
