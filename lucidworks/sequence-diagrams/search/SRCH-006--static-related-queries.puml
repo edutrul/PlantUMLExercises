@@ -1,0 +1,92 @@
+@startuml
+
+/' 
+@id: SRCH-006
+@file: SRCH-006--static-related-queries.puml
+@title: Static Related Queries – Fusion Rewrite
+@type: sequence
+@description: User performs a search; Fusion responds with both results[] and relatedQueries[] via Query Rewrite (Related Queries stage).
+
+📘 Scenario:
+1. User performs a search using the Drupal search input (HTMX or fallback).
+2. CosmosFusionQuery forwards the query to Fusion’s Query Pipeline.
+3. A Query Rewrite stage in Fusion returns results[] and relatedQueries[].
+4. CosmosFusionQuery parses and renders both the results and related suggestions.
+
+✅ Requirements:
+• Related queries must be statically configured in Fusion (Query Rewrite).
+• CosmosFusionQuery handles the query and response.
+• HTMX renders both search results and related queries server-side.
+• relatedQueries[] must be clearly shown in the diagram.
+'/
+
+<style>
+  title {
+    FontSize 30
+  }
+  box {
+    FontSize 25
+    .drupalPlatform {
+      BackgroundColor #F0F0F0
+    }
+    .fusionPlatform {
+      BackgroundColor #E0F7F7
+    }
+  }
+</style>
+
+title Static Related Queries – Fusion Rewrite
+
+autonumber
+
+actor "User" as User
+
+box "Drupal Platform" <<drupalPlatform>>
+  participant SearchForm [
+    =🔎 Search Input (Twig + HTMX)
+    ----
+    ""/search or /search/ajax""
+  ]
+  participant CosmosFusionQuery [
+    =🔄 Cosmos Fusion Query (custom)
+    ----
+    ""Relays query and renders related queries""
+  ]
+end box
+
+box "Fusion Platform" <<fusionPlatform>>
+  participant FusionQueryPipeline [
+    =⚙️ Fusion Query Pipeline
+    ----
+    ""Query Rewrite – Related Queries stage""
+  ]
+end box
+
+User -> SearchForm: Submit search query
+note right of SearchForm
+  Triggers HTMX request to `/search/ajax`
+  or fallback to `/search`
+end note
+
+SearchForm -> CosmosFusionQuery: GET /search/ajax?q=term
+
+activate CosmosFusionQuery
+CosmosFusionQuery -> FusionQueryPipeline: GET /query/{pipeline}?q=term
+
+FusionQueryPipeline --> CosmosFusionQuery: JSON response
+note over CosmosFusionQuery
+  {
+    results: [...],
+    relatedQueries: ["ICU bed", "lift", "patient transport"]
+  }
+end note
+deactivate CosmosFusionQuery
+
+CosmosFusionQuery --> SearchForm: Render HTML for results + related
+note right of SearchForm
+  Inject via HTMX:
+  🔹 Results
+  🔹 Related Queries (clickable suggestions)
+end note
+
+@enduml

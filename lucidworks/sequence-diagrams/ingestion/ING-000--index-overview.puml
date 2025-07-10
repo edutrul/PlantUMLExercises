@@ -1,0 +1,81 @@
+@startuml
+
+/'
+@id: ING-000
+@file: ING-000--index-overview.puml
+@title: Indexing Overview: Drupal to Fusion
+@type: sequence
+@description: Describes how Drupal content is sent to Lucidworks Fusion for indexing and made available in search results.
+
+📘 Scenario:
+1. Drupal content (e.g., pages or media) is created or updated.
+2. A system event (cron, queue, or manual) triggers the export.
+3. The exporter module sends the content to Fusion via POST.
+4. Fusion indexes the content and confirms the operation.
+
+✅ Requirements:
+• Triggered by system actions like cron, queue, or manual updates.
+• Uses a Drupal exporter module to format and send content.
+• Fusion must confirm successful indexing.
+• Exporter module may become a contrib module (e.g., fusion_export).
+'/
+
+<style>
+  title {
+    FontSize 30
+  }
+  box {
+    FontSize 25
+    .drupalPlatform {
+      BackgroundColor #F0F0F0
+    }
+    .fusionPlatform {
+      BackgroundColor #E0F7F7
+    }
+  }
+</style>
+
+title Indexing Overview: Drupal to Fusion
+
+autonumber
+
+actor "System\n(Cron, Queue, or Manual)" as System
+
+box "Drupal" <<drupalPlatform>>
+  participant DrupalContent [
+    =📄 Content
+    ----
+    "Pages, Media, etc."
+  ]
+  participant Exporter [
+    =🔄 Exporter Module
+    ----
+    "Prepares and sends the data"
+  ]
+end box
+
+box "Fusion" <<fusionPlatform>>
+  participant Indexing [
+    =🗂️ Fusion Index
+    ----
+    "Stores content for search"
+  ]
+end box
+
+note over Exporter
+  Still under review — may become a 
+  contributed module (e.g., fusion_export)
+end note
+
+System -> DrupalContent: Create or update content
+note right of DrupalContent
+  Triggered automatically or manually
+end note
+
+DrupalContent -> Exporter: Send content to exporter
+activate Exporter
+Exporter -> Indexing: Send data to Fusion
+Indexing --> Exporter: Confirm indexing
+deactivate Exporter
+
+@enduml
