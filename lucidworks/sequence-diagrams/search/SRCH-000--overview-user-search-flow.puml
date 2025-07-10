@@ -1,0 +1,76 @@
+@startuml
+
+/' 
+@id: SRCH-000
+@file: SRCH-000--overview-user-search-flow.puml
+@title: Overview – User Search Flow (Drupal + Fusion)
+@type: overview
+@description: High-level user-driven search experience from Drupal UI to Fusion results.
+
+📌 Scenario:
+1. User enters a search term in the Drupal frontend.
+2. Drupal sends the query to Fusion's Query Pipeline via REST API (GET).
+3. Fusion Query Pipeline applies ranking, filtering, and business logic.
+4. Fusion fetches relevant documents from the Fusion Collection.
+5. Results are returned from Fusion to Drupal.
+6. Drupal renders and displays the results to the user.
+
+✅ Requirements:
+• Use actor for User.
+• Use participant for Drupal Frontend, Fusion Query Pipeline, and Fusion Collection.
+• Use solid arrows for requests, dotted arrows for responses.
+• Use activation/deactivation to show async processing.
+• Add notes for ranking/filtering logic.
+• Style using <style> block to match diagram standards.
+'/
+
+title Overview – User Search Flow (Drupal + Fusion)
+
+<style>
+  title {
+    FontSize 30
+  }
+  box {
+    FontSize 25
+    .drupalPlatform {
+      BackgroundColor #F0F0F0
+    }
+    .fusionPlatform {
+      BackgroundColor #E0F7F7
+    }
+  }
+</style>
+
+autonumber
+
+actor User
+participant "Drupal Frontend" as DrupalFrontend <<drupalPlatform>>
+
+box "Fusion Platform" <<fusionPlatform>>
+  participant "Fusion Query Pipeline" as FusionQueryPipeline
+  database "Fusion Collection" as FusionCollection
+end box
+
+User -> DrupalFrontend: Enter search term
+note over DrupalFrontend: Search term entered\n(e.g., “Hospital”)
+activate DrupalFrontend
+DrupalFrontend -> FusionQueryPipeline: Send query
+
+note over FusionQueryPipeline
+  Applies search logic:
+  • Filters irrelevant results
+  • Ranks by relevance
+  • Boosts based on business rules
+  • Handles other search optimizations
+end note
+
+activate FusionQueryPipeline
+FusionQueryPipeline -> FusionCollection: Fetch results
+FusionCollection --> FusionQueryPipeline: Return matching results
+deactivate FusionQueryPipeline
+
+FusionQueryPipeline --> DrupalFrontend: Return matching results
+deactivate DrupalFrontend
+DrupalFrontend --> User: Display matching results
+
+@enduml
