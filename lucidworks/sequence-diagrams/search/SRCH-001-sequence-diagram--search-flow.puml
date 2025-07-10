@@ -1,53 +1,87 @@
 @startuml
-title User Search Flow – Lucidworks + Drupal Integration
 
-/'
+/' 
+@id: SRCH-001
+@file: SRCH-001--user-search-flow.puml
+@title: User Search Flow – Drupal → Fusion
+@type: sequence
+@description: Basic user search triggered via HTMX (or fallback), handled by fusion_export module calling Fusion Query Pipeline.
 
-🔁 Search Flow (User Query)
+📘 Scenario:
+1. User enters a search term into a form rendered by a Drupal Twig template using HTMX.
+2. The form sends a GET request to `/search/ajax` (HTMX) or `/search` (fallback).
+3. The Drupal `fusion_export` controller forwards the query to Fusion’s Query Pipeline.
+4. Fusion responds with JSON results.
+5. Drupal renders the HTML response.
+6. HTMX injects it dynamically or fallback reloads the page.
 
-Scenario:
-    1. User enters a search term in the Drupal frontend.
-    2. The frontend sends the query to the Fusion Query Pipeline.
-    4. The Pipeline fetches results from the Fusion Collection.
-    5. Results are passed back through the Fusion Query Pipeline.
-    6. The Fusion API returns search results to the Drupal frontend.
-    7. The frontend displays results to the User.
-
-Requirements:
-    • Use actor for User.
-    • Use participant for Drupal Frontend, Fusion Query Pipeline, and Fusion Collection.
-    • Use `as` alias names for cleaner syntax (e.g., DF for Drupal Frontend).
-    • Use solid arrows for requests and dotted arrows for responses.
-    • Optionally, use activation/deactivation to show processing time.
-    • Add notes for clarity (e.g., faceting, filtering logic).
-
+✅ Requirements:
+• Actor for User.
+• Search form lives in Drupal frontend (Twig).
+• Use FusionExportController for relay logic.
+• Show `/search/ajax` vs fallback flow.
+• Show GET to Fusion query endpoint.
 '/
-actor User
-participant "Drupal Frontend" as DrupalFrontend
 
-box "Fusion Platform"#E0F7F7
-  participant "Fusion Query Pipeline" as FusionQueryPipeline
-  database "Fusion Collection" as FusionCollection
+<style>
+  title {
+    FontSize 30
+  }
+  box {
+    FontSize 25
+    .drupalPlatform {
+      BackgroundColor #F0F0F0
+    }
+    .fusionPlatform {
+      BackgroundColor #E0F7F7
+    }
+  }
+</style>
+
+title User Search Flow – Drupal → Fusion
+
+autonumber
+
+actor "User" as User
+
+box "Drupal Platform" <<drupalPlatform>>
+  participant SearchForm [
+    =🔎 Search Input (Twig + HTMX)
+    ----
+    ""/search or /search/ajax""
+  ]
+  participant FusionExportController [
+    =🧩 fusion_export
+    ----
+    ""Handles GET and relays to Fusion""
+  ]
 end box
 
-User -> DrupalFrontend: Enter search term
-note over DrupalFrontend: Search term entered\n (e.g., “Hospital”)
-activate DrupalFrontend
-DrupalFrontend -> FusionQueryPipeline: Send query
-note over FusionQueryPipeline
-  Applies search logic:
-  • Filters irrelevant results
-  • Ranks by relevance
-  • Boosts based on business rules
-  • Handles other search optimizations
-end note
-activate FusionQueryPipeline
-FusionQueryPipeline -> FusionCollection: Fetch results
-FusionCollection --> FusionQueryPipeline: Return matching results
-deactivate FusionQueryPipeline
-FusionQueryPipeline --> DrupalFrontend: Return matching results
-deactivate DrupalFrontend
-DrupalFrontend --> User: Display matching results
+box "Fusion Platform" <<fusionPlatform>>
+  participant FusionQueryAPI [
+    =⚙️ Fusion Query Pipeline
+    ----
+    ""/api/apps/{app}/query/{pipeline}""
+  ]
+end box
 
+User -> SearchForm: Type search term + submit
+note right of SearchForm
+  Triggers HTMX request to `/search/ajax`
+  or fallback to `/search`
+end note
+
+SearchForm -> FusionExportController: GET request with `q=term`
+
+activate FusionExportController
+FusionExportController -> FusionQueryAPI: GET /query/{pipeline}?q=term
+FusionQueryAPI --> FusionExportController: Return JSON search results
+deactivate FusionExportController
+
+FusionExportController --> SearchForm: Render & return HTML results
+note right of SearchForm
+  Injects into page (HTMX)
+  or full reload (fallback)
+end note
 
 @enduml
