@@ -1,0 +1,81 @@
+@startuml
+
+/' 
+@id: SRCH-005
+@file: SRCH-005--search-analytics.puml
+@title: Search Analytics Flow
+@type: sequence
+@description: Tracks query, click, conversion events; stores in Fusion Signals
+
+📘 Scenario:
+1. User performs a search via `/search/ajax`.
+2. User views results, clicks a result, or performs a conversion (e.g., form submission).
+3. Frontend sends tracking event to Fusion Signals endpoint.
+4. Signals are stored for later use in boosting, related queries, etc.
+
+✅ Requirements:
+• Show query, click, and conversion events.
+• Fusion Signals is where events are stored.
+• Triggered via frontend (JavaScript or HTMX extension).
+'/
+
+<style>
+  title {
+    FontSize 30
+  }
+  box {
+    FontSize 25
+    .drupalPlatform {
+      BackgroundColor #F0F0F0
+    }
+    .fusionPlatform {
+      BackgroundColor #E0F7F7
+    }
+  }
+</style>
+
+title Search Analytics Flow
+
+autonumber
+
+actor "User" as User
+
+box "Drupal Platform" <<drupalPlatform>>
+  participant SearchForm [
+    =🔎 Search Input (Twig + HTMX)
+    ----
+    ""/search/ajax""
+  ]
+  participant ResultPage [
+    =📄 Result HTML
+    ----
+    ""List of search results""
+  ]
+  participant SignalsTracker [
+    =📊 Tracker Script
+    ----
+    ""JS/HTMX sends events to Fusion""
+  ]
+end box
+
+box "Fusion Platform" <<fusionPlatform>>
+  participant FusionSignals [
+    =📈 Fusion Signals
+    ----
+    ""Receives and stores events""
+  ]
+end box
+
+User -> SearchForm: Submit search (q=term)
+SearchForm -> ResultPage: Render search results
+
+User -> ResultPage: View or click result
+note right of ResultPage
+  Events: click, view, conversion
+  Tracked via JavaScript or HTMX
+end note
+
+ResultPage -> SignalsTracker: Trigger tracking event
+SignalsTracker -> FusionSignals: Send analytics event (JSON)
+
+@enduml
