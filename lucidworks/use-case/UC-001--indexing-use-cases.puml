@@ -1,6 +1,6 @@
 @startuml
 
-/'
+/' 
 @id: UC-001
 @file: UC-001--indexing-use-cases.puml
 @title: Indexing Roles and Actions
@@ -9,14 +9,31 @@
 @related: ING-001, ING-005, ING-006
 '/
 
+<style>
+  title {
+    FontSize 28
+  }
+  actor {
+    FontSize 22
+    FontColor black
+  }
+  usecase {
+    FontSize 20
+    LineThickness 2
+    Padding 8
+  }
+
+</style>
+
+title Indexing Use Cases Across Roles – Drupal to Lucidworks
+
 left to right direction
-skinparam packageStyle rectangle
 
 actor Editor
 actor Admin
 actor "Fusion System" as Fusion
 
-rectangle "Drupal Platform" {
+package "Drupal Platform" as DrupalPlatform {
   usecase "Submit or Update Node\n(e.g. Press Release)" as UC1
   usecase "Trigger Indexing via UI" as UC2
   usecase "Trigger Indexing via CLI (Drush)" as UC3
@@ -24,7 +41,7 @@ rectangle "Drupal Platform" {
   usecase "Expose JSON Export\n(REST endpoint)" as UC6
 }
 
-rectangle "Lucidworks Platform" {
+package "Lucidworks Platform" as LucidworksPlatform <<LucidworksPlatform>> {
   usecase "Schedule Job\n(every 5min)" as UC5
   usecase "Run Indexing Pipeline" as UC7
   usecase "Ingest into Fusion Collection" as UC8
