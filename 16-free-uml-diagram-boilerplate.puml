@@ -1,0 +1,38 @@
+@startuml
+
+package "Web Application" {
+    [Frontend] as "Frontend development"
+    component Backend as "Backend development"
+    Database db
+    Actor user
+    :AdminLucidworks: as "Admin Lucidworks" <<Admin>>
+
+
+    '/ boundary and its shortcut below.
+    boundary CRMSYSTEM as "CRM system"
+    [CRMHUBSPOT] as "CRM HubSpot"
+
+
+    user --> Frontend: Uses
+    note right of user
+      hey
+    end note
+
+    AdminLucidworks --> Backend: Manages
+    Frontend --> Backend: Requests data
+    CRMHUBSPOT --> Backend: Provides data
+    Backend --> db: Reads/Writes data
+
+
+}
+
+[frontend]
+
+[backend]
+
+Actor Edu
+
+database edu
+
+
+@enduml
