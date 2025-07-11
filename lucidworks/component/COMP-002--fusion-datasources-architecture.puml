@@ -11,11 +11,11 @@
 
 <style>
   component {
-    FontSize 14
+    FontSize 18
     Padding 10
   }
   title {
-    FontSize 24
+    FontSize 18
   }
   database {
     FontSize 28
@@ -29,20 +29,22 @@ title Fusion Architecture – Multisite Indexing & Search
 
 rectangle " " {
   package "Drupal Sites" {
-    [📦 pro_baxter_com_datasource] <<component>>
-    [📦 edu_baxter_com_datasource] <<component>>
-    [📦 pro_baxter_ca_datasource] <<component>>
+    [pro_baxter_com_datasource] as "📦 pro_baxter_com_datasource" <<component>>
+    [edu_baxter_com_datasource] as "📦 edu_baxter_com_datasource" <<component>>
+    [pro_baxter_ca_datasource] as "📦 pro_baxter_ca_datasource" <<component>>
+    [+150 additional datasources] as "📦 +150 additional\ndatasources" <<component>>
   }
 
   package "Fusion Platform" {
     package "Indexing Pipelines" {
-      [🔁 shared_indexing_pipeline] <<component>>
+      [shared_indexing_pipeline] as "🔁 shared_indexing_pipeline" <<component>>
     }
 
     package "Query Pipelines" {
-      [🔎 pro_baxter_com_query_pipeline] <<component>>
-      [🔎 edu_baxter_com_query_pipeline] <<component>>
-      [🔎 pro_baxter_ca_query_pipeline] <<component>>
+      [pro_baxter_com_query_pipeline] as "🔎 pro_baxter_com_query_pipeline" <<component>>
+      [edu_baxter_com_query_pipeline] as "🔎 edu_baxter_com_query_pipeline" <<component>>
+      [pro_baxter_ca_query_pipeline] as "🔎 pro_baxter_ca_query_pipeline" <<component>>
+      [+150 additional query pipelines] as "🔎 +150 additional\nquery pipelines" <<component>>
     }
 
     database "🗃️   COSMOS Collection   " as cosmos_collection
@@ -50,16 +52,23 @@ rectangle " " {
 }
 
 ' Indexing flow
-[📦 pro_baxter_com_datasource] --> [🔁 shared_indexing_pipeline]
-[📦 edu_baxter_com_datasource] --> [🔁 shared_indexing_pipeline]
-[📦 pro_baxter_ca_datasource] --> [🔁 shared_indexing_pipeline]
+[pro_baxter_com_datasource] --> [shared_indexing_pipeline]
+[edu_baxter_com_datasource] --> [shared_indexing_pipeline]
+[pro_baxter_ca_datasource] --> [shared_indexing_pipeline]
+[+150 additional datasources] --> [shared_indexing_pipeline]
 
-[🔁 shared_indexing_pipeline] --> cosmos_collection
+[shared_indexing_pipeline] --> cosmos_collection
 
 ' Query flow
-[🔎 pro_baxter_com_query_pipeline] --> cosmos_collection
-[🔎 edu_baxter_com_query_pipeline] --> cosmos_collection
-[🔎 pro_baxter_ca_query_pipeline] --> cosmos_collection
+[pro_baxter_com_query_pipeline] --> cosmos_collection
+[edu_baxter_com_query_pipeline] --> cosmos_collection
+[pro_baxter_ca_query_pipeline] --> cosmos_collection
+[+150 additional query pipelines] --> cosmos_collection
+
+note bottom of cosmos_collection
+  🔁 Approx. 150 Drupal sites are connected via
+  unique datasources and query pipelines.
+end note
 
 legend bottom
 |= Symbol |= Meaning |
