@@ -9,6 +9,8 @@
 @related: ING-001 → ING-006
 '/
 
+title Drupal–Lucidworks Integration: Component Overview
+
 skinparam componentStyle rectangle
 
 package "Lucidworks Platform" {
