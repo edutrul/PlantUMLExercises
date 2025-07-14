@@ -95,3 +95,9 @@ https://your-username.github.io/your-repo-name/
 | Iframe embedding (Miro/Confluence) | ✅ Possible |
 | Diagram index table                | 🕐 Planned |
 | CI auto-gen of SVGs                | 🕐 Optional |
+
+
+
+### Drupal Lucidworks Architecture
+
+<img src="COMP-001--drupal-lucidworks-architecture.svg" style="width: 100%; max-width: 800px;" />
